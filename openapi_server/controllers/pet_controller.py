@@ -5,6 +5,11 @@ from openapi_server.models.api_response import ApiResponse  # noqa: E501
 from openapi_server.models.pet import Pet  # noqa: E501
 from openapi_server import util
 
+arr=[      
+    Pet(1, None,'HIMALIA CATTRICK',['https://littlestpetshop.hasbro.com/pet-tracker/img/pets/2017/1-104.png'], None, 'available'),
+    Pet(2, None, 'FUZZY GUMBOPAWS', ['https://littlestpetshop.hasbro.com/pet-tracker/img/pets/2016/294.png'], None, 'available'),
+    Pet(3, None, 'MAINELY FLUFFTAIL', ['https://littlestpetshop.hasbro.com/pet-tracker/img/pets/2017/79.png'], None, 'available')
+]
 
 def add_pet(body):  # noqa: E501
     """Add a new pet to the store
@@ -18,7 +23,13 @@ def add_pet(body):  # noqa: E501
     """
     if connexion.request.is_json:
         body = Pet.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+        body.id = len(arr) + 1
+        print(body.id,'body.id')
+      
+        arr.append(body)
+        return '', 201
+    else:
+        return 'Invalid input', 405, {'x-error': 'Invalid input'}
 
 
 def delete_pet(pet_id, api_key=None):  # noqa: E501
@@ -33,7 +44,11 @@ def delete_pet(pet_id, api_key=None):  # noqa: E501
 
     :rtype: None
     """
-    return 'do some magic!'
+    for pet in arr:
+        if pet.id == pet_id:
+            arr.remove(pet)
+            return '' , 204
+    return 'Invalid pet value', 400, {'x-error': 'Invalid pet value'}
 
 
 def find_pets_by_status(status):  # noqa: E501
@@ -46,7 +61,7 @@ def find_pets_by_status(status):  # noqa: E501
 
     :rtype: List[Pet]
     """
-    return 'do some magic!'
+    return arr
 
 
 def find_pets_by_tags(tags):  # noqa: E501
@@ -72,7 +87,12 @@ def get_pet_by_id(pet_id):  # noqa: E501
 
     :rtype: Pet
     """
-    return 'do some magic!'
+    for pet in arr:
+        print(pet)
+        if pet.id == pet_id:
+            return pet
+
+    return 'Pet not found', 404, {'x-error': 'Pet not found'}
 
 
 def update_pet(body):  # noqa: E501
