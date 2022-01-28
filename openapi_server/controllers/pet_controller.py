@@ -1,15 +1,11 @@
 import connexion
-import six
 
 from openapi_server.models.api_response import ApiResponse  # noqa: E501
 from openapi_server.models.pet import Pet  # noqa: E501
 from openapi_server import util
+from openapi_server.data import petdata
 
-arr=[      
-    Pet(1, None,'HIMALIA CATTRICK',['https://littlestpetshop.hasbro.com/pet-tracker/img/pets/2017/1-104.png'], None, 'available'),
-    Pet(2, None, 'FUZZY GUMBOPAWS', ['https://littlestpetshop.hasbro.com/pet-tracker/img/pets/2016/294.png'], None, 'available'),
-    Pet(3, None, 'MAINELY FLUFFTAIL', ['https://littlestpetshop.hasbro.com/pet-tracker/img/pets/2017/79.png'], None, 'available')
-]
+arr = petdata.readPets()
 
 def add_pet(body):  # noqa: E501
     """Add a new pet to the store
@@ -23,10 +19,8 @@ def add_pet(body):  # noqa: E501
     """
     if connexion.request.is_json:
         body = Pet.from_dict(connexion.request.get_json())  # noqa: E501
-        body.id = len(arr) + 1
-        print(body.id,'body.id')
-      
-        arr.append(body)
+        body.id = petdata.nextPetID()
+        petdata.addPet(body)
         return '', 201
     else:
         return 'Invalid input', 405, {'x-error': 'Invalid input'}
